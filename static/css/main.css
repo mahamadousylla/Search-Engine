@@ -1,0 +1,32 @@
+input[type=text] {
+    width: 60%;
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid grey;
+    outline: none;
+
+}
+
+input[type=text]:focus {
+    border: 3px solid #666;
+}
+
+input[type=submit] {
+	border-radius: 5px;
+	background-color: #f2f2f2;
+	border-color: #f2f2f2;
+	color: #757575;
+	width: 12%;
+	height: 38px;
+}
+
+.form {
+	display: 'block';
+	text-align: 'center';
+	width: 50%;
+	height: 50%;
+	position: absolute; /* or absolute */
+	top: 25%;
+	left: 25%;
+}
