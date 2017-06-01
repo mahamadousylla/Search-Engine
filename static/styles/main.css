@@ -3,23 +3,38 @@ input[type=text] {
     height: 40px;
     box-sizing: border-box;
     border-radius: 5px;
-    border: 1px solid grey;
+    border: 2px solid #c7c2c2;
     outline: none;
 
 }
 
 input[type=text]:focus {
-    border: 3px solid #666;
+    border: 2px solid #949191;
 }
 
 input[type=submit] {
+	border: 1px solid #f2f2f2;
 	border-radius: 5px;
 	background-color: #f2f2f2;
 	border-color: #f2f2f2;
 	color: #757575;
+	font-size: 13px;
+	font-weight: bold;
+	outline: none;
 	width: 12%;
 	height: 38px;
 }
+
+
+/*input[type=button], input[type=submit], input[type=reset] {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}*/
 
 .form {
 	display: 'block';
