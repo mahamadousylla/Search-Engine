@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 
 app = Flask(__name__, static_url_path='')
-pq = []
+pq = ["BMW", "Volvo", "Saab", "Ford", "Fiat", "Audi"];
 
 
 @app.route("/")
@@ -10,6 +10,7 @@ def search():
 
 @app.route("/result", methods=['POST']) 
 def getResult():
+	global pq
 	#pq should be top 10 results
 	search = request.form['query'].strip()
 	print("made it", search)
@@ -17,3 +18,4 @@ def getResult():
 
 if __name__ == "__main__":
     app.run(debug=True)
+    # app.run(host='0.0.0.0')
