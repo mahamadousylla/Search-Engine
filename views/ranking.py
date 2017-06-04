@@ -35,14 +35,15 @@ class Parser:
                 ## Strips the tags
                 self.soup = BeautifulSoup(f, 'lxml')
                 for tag in invalidTags:
-                        for match in self.soup.findAll(tag):
-                                match.replaceWithChildren()
+                    for match in self.soup.findAll(tag):
+                        match.replaceWithChildren()
 
                 ## splits the words into a list
                 self.soup = re.split('[^a-zA-Z0-9]', str(self.soup))
                 
                 ## loop through the list and add unique words into dictionary
                 for word in self.soup:
+                    print("word : ", word)
                     if word != "":
                         countDictionary[self.doc] += 1
                         print("inParseerrrr")
@@ -85,6 +86,7 @@ def getAllFiles():
 
     getBKdictionary()
 
+    i = 0
     for d in allDirectories: ## 0-74 + json files
         if os.path.isdir(path + "/" + str(d) + "/"):
             print("if statement", "\n")
@@ -92,6 +94,9 @@ def getAllFiles():
             numOfDocuments += len(fileDirectory)
 
         for f in fileDirectory:
+            if i == 50: return
+            i += 1
+            print("f: ", f)
             filePath = path + '/' + str(d) + '/' + str(f)
             parser = Parser(filePath, d, f)
             parser.countWords()
@@ -152,10 +157,10 @@ def Calculate(term):
     i = 1 ## keeps track of top 10 value
     ## Adds the top 10 url into a list
     for k, v in sorted(tfidfDictionary.items(), key = lambda x: -x[1] ):
-        i += 1
         if i < 10:
             searchResults.append(BKdictionary[k])
-    
+        i += 1
+
     return searchResults
             #Testing
 

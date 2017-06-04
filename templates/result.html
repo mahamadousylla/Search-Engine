@@ -10,9 +10,12 @@
 				<img style="display:inline-block" src="img/purs.png" >
 				<img style="display:inline-block;margin-bottom: 20px;margin-left: 10px" src="img/favico.ico" >
 			</div>
+				<h3>Search Results for: {{ query }}</h3>
+				
 				{% for url in data %}
 				<tr>
-				    <p style="font-size:20px" >{{ url }}</p>
+				    <p style="font-size:17px" >{{ url }} <a style="font-size:15px" href="https://{{ url }}" target="_blank">Link</a> </p>
+
 				</tr>
 				{% endfor %}
 		</div>
