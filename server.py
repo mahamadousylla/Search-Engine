@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import views.ranking as Ranking
 
 app = Flask(__name__, static_url_path='')
 pq = ["BMW", "Volvo", "Saab", "Ford", "Fiat", "Audi"];

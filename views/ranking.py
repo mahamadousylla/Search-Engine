@@ -3,16 +3,18 @@ from math import log                ## used to calculate tf-idf
 from bs4 import BeautifulSoup       ## parse url
 from collections import defaultdict ## a dictionary to keep track of data
 
-path = "C:\Users\Testing\Desktop\WEBPAGES_CLEAN"    ## Path based on users directory
+path = "WEBPAGES_CLEAN"             ## Path based on users directory
 allDirectories = []                 ## contains all directory
 allFiles = []                       ## contains all file in the directory
+searchResults = []                  ## List of the urls
+invalidIndex = []                   ## Used to improve searches
+uniqueTerms = set()                 ## set of unique terms to calculate tfidf
 numOfDocuments = 0                  ## counts the number of document
 BKdictionary = dict()               ## contains all information from the bookkeeper file
 countDictionary = defaultdict(int)  ## contanis the number of term in a document
 tfidfDictionary = defaultdict(int)  ## contains the calculated tf-idf
 invertedIndex = defaultdict(lambda : defaultdict(int))                        ## An inner and outer dictionary 
 invalidTags = ['body', 'title', 'h1', 'h2', 'h3', 'b', 'strong', 'html', 'p'] ## Invalid tags in url
-invalidIndex = ['the', 'a', 'an', 'this', 'that', 'these', 'those']           ## Used to improve searches
 
 class Parser:
     def __init__(self, filePath, dirNum, fileNum):
@@ -33,8 +35,8 @@ class Parser:
                 ## Strips the tags    
                 self.soup = BeautifulSoup(f, 'lxml')
                 for tag in invalidTags:
-                    for match in self.soup.findAll(tag):
-                        match.replaceWithChildren()
+                        for match in self.soup.findAll(tag):
+                                match.replaceWithChildren()
 
                 ## splits the words into a list
                 self.soup = re.split('[^a-zA-Z0-9]', str(self.soup))
@@ -50,8 +52,9 @@ class Parser:
         
 def getBKdictionary():
     global BKdictionary
+
     ## Path based on users directory
-    with open('C:\Users\Testing\Desktop\WEBPAGES_CLEAN\\bookkeeping.json', "r") as f:
+    with open('..\WEBPAGES_CLEAN\\bookkeeping.json', "r") as f:
 
         ## cleans the line so that it is easily placed into the dictionary
         for l in f:
@@ -71,7 +74,8 @@ def getAllFiles():
     global numOfDocuments
     global countDictionary
     global tfidfDictionary
-
+    global invalidTags
+    
     ## remove file from list, since it is not a directory
     allDirectories.extend(os.listdir(path))
     allDirectories.remove('bookkeeping.json')
@@ -83,42 +87,91 @@ def getAllFiles():
         if os.path.isdir(path + "\\" + str(d) + "\\"):
             fileDirectory = os.listdir(path + '\\' + str(d))                        
             numOfDocuments += len(fileDirectory)
-                    
+
         for f in fileDirectory:
             filePath = path + '\\' + str(d) + '\\' + str(f)
             parser = Parser(filePath, d, f)
-            parser.countWords()    
+            parser.countWords()
 
 
-def Calculate():
+def getUserInput(term):
+    global uniqueTerms
     termList = []
-    term = raw_input('Enter a term: ').lower()
+    term = term.lower()
 
-    ## Check if user input one or more value
-    ## Then take the appropriate actions
-    if ' ' in term:
-        termList = term.split(' ')
-        for t in invalidIndex:
-            if t in termList:
-                termList.remove(t)
-    else:
-        termList.append(term)
-    
+    try:
+        ## parses the term and checks for unique terms
+        termList = re.split('[^a-zA-Z0-9]', term)
+
+        for t in termList:
+            if t != '':
+                uniqueTerms.add(t)
+
+        temp = uniqueTerms.copy() ## a copy of uniqueTerms to remove value
+                                  ## from the orginal set
+        
+        ## Removes terms that are not in the dictionary
+        for t in temp:
+            if t not in invertedIndex:
+                uniqueTerms.remove(t)
+                
+        ## takes out stop words
+        for t in temp:
+            if t in invalidIndex and len(uniqueTerms) > 1 and t in uniqueTerms:
+                uniqueTerms.remove(t)            
+                
+    except:
+        print 'Your search did not match any documents'
+
+            
+def Calculate(term):
+    global BKdictionary
+    global invertedIndex
+    global tfidfDictionary
+    global searchResults
+    global invalidIndex
+
+    getUserInput(term) ## takes userInput
+
+    if len(uniqueTerms) == 0:
+        return (False, 'No documents match your query')
+        
     ## Calculate tf-idf
-    for t in termList:
+    for t in uniqueTerms:
         for k, v in invertedIndex[t].items():    ## k = doc, v = tf
-            tf = float(v) / countDictionary[k]   ## countDictionary[k] = total terms in doc
-            idf = log( numOfDocuments, len(invertedIndex[t]) )
+            tf = float(v) / float(countDictionary[k])   ## countDictionary[k] = total terms in doc
+            idf = log( float(numOfDocuments)/ float(len(invertedIndex[t])) )
             tf_idf = tf * idf
             tfidfDictionary[k] += round(tf_idf, 5)
-    
-    i = 0 ## keeps track of top 10 value
-    for k, v in sorted(tfidfDictionary.items(), key = lambda x: -x[1] ):
-        i += 0
-        if i < 10: print BKdictionary[k], ': ', v
         
+    i = 1 ## keeps track of top 10 value
+    ## Adds the top 10 url into a list
+    for k, v in sorted(tfidfDictionary.items(), key = lambda x: -x[1] ):
+        i += 1
+        if i < 10:
+            searchResults.append(BKdictionary[k])
+    
+
+            #Testing
+
+    # i = 0 ## shows url ranking
+    # ## loop to print url results
+    # for k in searchResults:
+    #     i += 1
+    #     if i <= 10: print '(', i, ')  ', k
+
+
+def getStopWords():
+    global invalidIndex
+    
+    with open('stopwords.txt', "r") as f:
+        for line in f:
+            line = line.strip('\n')
+            invalidIndex.append(line.strip())
+            
         
 if __name__ == "__main__":
+    getStopWords()
     getAllFiles()
     Calculate()
 
