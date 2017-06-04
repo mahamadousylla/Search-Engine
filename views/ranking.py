@@ -3,7 +3,7 @@ from math import log                ## used to calculate tf-idf
 from bs4 import BeautifulSoup       ## parse url
 from collections import defaultdict ## a dictionary to keep track of data
 
-path = "WEBPAGES_CLEAN"             ## Path based on users directory
+path = "views/WEBPAGES_CLEAN"       ## Path based on users directory
 allDirectories = []                 ## contains all directory
 allFiles = []                       ## contains all file in the directory
 searchResults = []                  ## List of the urls
@@ -24,7 +24,7 @@ class Parser:
         self.fileNum = fileNum
         self.doc = str(dirNum) + '/' + str(fileNum)
         self.soup = ''
-            
+
     def countWords(self):
         try:
             if os.stat(self.file).st_size == 0:
@@ -32,7 +32,7 @@ class Parser:
                 return
 
             with open(self.file, "r") as f:
-                ## Strips the tags    
+                ## Strips the tags
                 self.soup = BeautifulSoup(f, 'lxml')
                 for tag in invalidTags:
                         for match in self.soup.findAll(tag):
@@ -45,16 +45,17 @@ class Parser:
                 for word in self.soup:
                     if word != "":
                         countDictionary[self.doc] += 1
+                        print("inParseerrrr")
                         invertedIndex[word.lower()][self.doc] += 1                                  
         except:
-            print("You did not enter a valid file path")
+            return ("You did not enter a valid file path")
         
-        
+
 def getBKdictionary():
     global BKdictionary
 
     ## Path based on users directory
-    with open('..\WEBPAGES_CLEAN\\bookkeeping.json', "r") as f:
+    with open("views/WEBPAGES_CLEAN/bookkeeping.json", "r") as f:
 
         ## cleans the line so that it is easily placed into the dictionary
         for l in f:
@@ -76,6 +77,7 @@ def getAllFiles():
     global tfidfDictionary
     global invalidTags
     
+    fileDirectory = []
     ## remove file from list, since it is not a directory
     allDirectories.extend(os.listdir(path))
     allDirectories.remove('bookkeeping.json')
@@ -84,12 +86,13 @@ def getAllFiles():
     getBKdictionary()
 
     for d in allDirectories: ## 0-74 + json files
-        if os.path.isdir(path + "\\" + str(d) + "\\"):
-            fileDirectory = os.listdir(path + '\\' + str(d))                        
+        if os.path.isdir(path + "/" + str(d) + "/"):
+            print("if statement", "\n")
+            fileDirectory = os.listdir(path + '/' + str(d))                        
             numOfDocuments += len(fileDirectory)
 
         for f in fileDirectory:
-            filePath = path + '\\' + str(d) + '\\' + str(f)
+            filePath = path + '/' + str(d) + '/' + str(f)
             parser = Parser(filePath, d, f)
             parser.countWords()
 
@@ -98,7 +101,7 @@ def getUserInput(term):
     global uniqueTerms
     termList = []
     term = term.lower()
-
+    print("getUserInput" , term)
     try:
         ## parses the term and checks for unique terms
         termList = re.split('[^a-zA-Z0-9]', term)
@@ -111,6 +114,7 @@ def getUserInput(term):
                                   ## from the orginal set
         
         ## Removes terms that are not in the dictionary
+        print("temp: ", temp, "invertedIndex: ", invertedIndex)
         for t in temp:
             if t not in invertedIndex:
                 uniqueTerms.remove(t)
@@ -118,10 +122,11 @@ def getUserInput(term):
         ## takes out stop words
         for t in temp:
             if t in invalidIndex and len(uniqueTerms) > 1 and t in uniqueTerms:
-                uniqueTerms.remove(t)            
+                uniqueTerms.remove(t)
+        print("uniqueTerms: ", uniqueTerms)           
                 
     except:
-        print 'Your search did not match any documents'
+        return 'Your search did not match any documents'
 
             
 def Calculate(term):
@@ -151,7 +156,7 @@ def Calculate(term):
         if i < 10:
             searchResults.append(BKdictionary[k])
     
-
+    return searchResults
             #Testing
 
     # i = 0 ## shows url ranking
@@ -164,7 +169,7 @@ def Calculate(term):
 def getStopWords():
     global invalidIndex
     
-    with open('stopwords.txt', "r") as f:
+    with open('views/stopwords.txt', "r") as f:
         for line in f:
             line = line.strip('\n')
             invalidIndex.append(line.strip())
