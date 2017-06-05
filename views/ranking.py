@@ -116,7 +116,6 @@ def Calculate(term):
     global searchResults
     global invalidIndex
 
-    print("UT: ", term)
     getUserInput(term) ## takes userInput
 
     if len(uniqueTerms) == 0:
