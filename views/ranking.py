@@ -77,6 +77,7 @@ def Calculate(term):
     global searchResults
     global invalidIndex
 
+    searchResults = []
     getUserInput(term) ## takes userInput
 
     if len(uniqueTerms) == 0:
@@ -95,6 +96,7 @@ def Calculate(term):
         searchResults.append(BKdictionary[k])
         if len(searchResults) == 10: return searchResults
 
+    return searchResults
 
 def getStopWords():
     global invalidIndex
