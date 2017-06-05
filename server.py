@@ -13,10 +13,11 @@ def getResult():
 
 	#pq should be top 10 results
 	search = request.form['query'].strip()
+	if search == "": return render_template("index.html")
 	Ranking.getStopWords()
 	Ranking.getAllFiles()
 	pq = Ranking.Calculate(search)
-
+	if pq[0] == False: return render_template("error.html", query = search)
 	return render_template("result.html", data = pq, query = search)
 
 if __name__ == "__main__":

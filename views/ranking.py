@@ -67,7 +67,7 @@ def getUserInput(term):
                 uniqueTerms.remove(t)
                 
     except:
-        return 'Your search did not match any documents'
+        return [False, 'No documents match your query']
 
             
 def Calculate(term):
@@ -80,7 +80,7 @@ def Calculate(term):
     getUserInput(term) ## takes userInput
 
     if len(uniqueTerms) == 0:
-        return (False, 'No documents match your query')
+        return [False, 'No documents match your query']
         
     ## Calculate tf-idf
     for t in uniqueTerms:
