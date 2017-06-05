@@ -2,12 +2,9 @@ import os, sys, re                  ## open files and parse expressions
 import json
 import ast
 from math import log                ## used to calculate tf-idf
-from bs4 import BeautifulSoup       ## parse url
 from collections import defaultdict ## a dictionary to keep track of data
 
-path = "views/WEBPAGES_CLEAN"       ## Path based on users directory
-allDirectories = []                 ## contains all directory
-allFiles = []                       ## contains all file in the directory
+
 searchResults = []                  ## List of the urls
 invalidIndex = []                   ## Used to improve searches
 uniqueTerms = set()                 ## set of unique terms to calculate tfidf
@@ -18,40 +15,7 @@ tfidfDictionary = defaultdict(int)  ## contains the calculated tf-idf
 invertedIndex = defaultdict(lambda : defaultdict(int))                        ## An inner and outer dictionary 
 invalidTags = ['body', 'title', 'h1', 'h2', 'h3', 'b', 'strong', 'html', 'p'] ## Invalid tags in url
 
-class Parser:
-    def __init__(self, filePath, dirNum, fileNum):
-        self.file = filePath
-        self.empty = False
-        self.dirNum = dirNum
-        self.fileNum = fileNum
-        self.doc = str(dirNum) + '/' + str(fileNum)
-        self.soup = ''
-
-    def countWords(self):
-        try:
-            if os.stat(self.file).st_size == 0:
-                self.empty = True
-                return
-
-            with open(self.file, "r") as f:
-                ## Strips the tags
-                self.soup = BeautifulSoup(f, 'lxml')
-                for tag in invalidTags:
-                    for match in self.soup.findAll(tag):
-                        match.replaceWithChildren()
-
-                ## splits the words into a list
-                self.soup = re.split('[^a-zA-Z0-9]', str(self.soup))
-                
-                ## loop through the list and add unique words into dictionary
-                for word in self.soup:
-                    if word != "":
-                        countDictionary[self.doc] += 1
-                        invertedIndex[word.lower()][self.doc] += 1                                  
-        except:
-            return ("You did not enter a valid file path")
         
-
 def getBKdictionary():
     global BKdictionary
 
@@ -62,8 +26,6 @@ def getBKdictionary():
 def getAllFiles():
     global BKdictionary
     global invertedIndex
-    global allDirectories
-    global allFiles
     global numOfDocuments
     global countDictionary
     global tfidfDictionary
@@ -92,8 +54,7 @@ def getUserInput(term):
             if t != '':
                 uniqueTerms.add(t)
 
-        temp = uniqueTerms.copy() ## a copy of uniqueTerms to remove value
-                                  ## from the orginal set
+        temp = uniqueTerms.copy() ## a copy of uniqueTerms to remove value from the orginal set
         
         ## Removes terms that are not in the dictionary
         for t in temp:
