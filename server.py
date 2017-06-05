@@ -16,7 +16,7 @@ def getResult():
 	Ranking.getStopWords()
 	Ranking.getAllFiles()
 	pq = Ranking.Calculate(search)
-	print("pq: ", pq, len(pq))
+	# if pq.split()[0] == False: return render_template("index.html")
 	return render_template("result.html", data = pq, query = search)
 
 if __name__ == "__main__":

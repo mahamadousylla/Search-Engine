@@ -1,4 +1,6 @@
 import os, sys, re                  ## open files and parse expressions
+import json
+import ast
 from math import log                ## used to calculate tf-idf
 from bs4 import BeautifulSoup       ## parse url
 from collections import defaultdict ## a dictionary to keep track of data
@@ -9,7 +11,7 @@ allFiles = []                       ## contains all file in the directory
 searchResults = []                  ## List of the urls
 invalidIndex = []                   ## Used to improve searches
 uniqueTerms = set()                 ## set of unique terms to calculate tfidf
-numOfDocuments = 0                  ## counts the number of document
+numOfDocuments = 37497              ## counts the number of document
 BKdictionary = dict()               ## contains all information from the bookkeeper file
 countDictionary = defaultdict(int)  ## contanis the number of term in a document
 tfidfDictionary = defaultdict(int)  ## contains the calculated tf-idf
@@ -53,17 +55,8 @@ class Parser:
 def getBKdictionary():
     global BKdictionary
 
-    ## Path based on users directory
-    with open("views/WEBPAGES_CLEAN/bookkeeping.json", "r") as f:
-
-        ## cleans the line so that it is easily placed into the dictionary
-        for l in f:
-            l = l.strip('\n')
-            l = l.strip(',')
-            l = l.replace(' ', '')
-            l = l.replace('"', '')
-            line = l.split(':')
-            BKdictionary[line[0]] = line[-1]
+    f = open("BKdictionary.json", "r")
+    BKdictionary = json.loads(f.read())
 
 
 def getAllFiles():
@@ -75,25 +68,15 @@ def getAllFiles():
     global countDictionary
     global tfidfDictionary
     global invalidTags
-    
-    fileDirectory = []
-    ## remove file from list, since it is not a directory
-    allDirectories.extend(os.listdir(path))
-    allDirectories.remove('bookkeeping.json')
-    allDirectories.remove('bookkeeping.tsv')
 
     getBKdictionary()
 
-    i = 0
-    for d in allDirectories: ## 0-74 + json files
-        if os.path.isdir(path + "/" + str(d) + "/"):
-            fileDirectory = os.listdir(path + '/' + str(d))                        
-            numOfDocuments += len(fileDirectory)
 
-        for f in fileDirectory:
-            filePath = path + '/' + str(d) + '/' + str(f)
-            parser = Parser(filePath, d, f)
-            parser.countWords()
+    f = open("countDictionary.json", "r")
+    countDictionary = json.loads(f.read())
+
+    g = open("invertedIndex.json", "r")
+    invertedIndex = json.loads(g.read())
 
 
 def getUserInput(term):
@@ -133,6 +116,7 @@ def Calculate(term):
     global searchResults
     global invalidIndex
 
+    print("UT: ", term)
     getUserInput(term) ## takes userInput
 
     if len(uniqueTerms) == 0:
