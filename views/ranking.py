@@ -43,10 +43,8 @@ class Parser:
                 
                 ## loop through the list and add unique words into dictionary
                 for word in self.soup:
-                    print("word : ", word)
                     if word != "":
                         countDictionary[self.doc] += 1
-                        print("inParseerrrr")
                         invertedIndex[word.lower()][self.doc] += 1                                  
         except:
             return ("You did not enter a valid file path")
@@ -89,14 +87,10 @@ def getAllFiles():
     i = 0
     for d in allDirectories: ## 0-74 + json files
         if os.path.isdir(path + "/" + str(d) + "/"):
-            print("if statement", "\n")
             fileDirectory = os.listdir(path + '/' + str(d))                        
             numOfDocuments += len(fileDirectory)
 
         for f in fileDirectory:
-            if i == 50: return
-            i += 1
-            print("f: ", f)
             filePath = path + '/' + str(d) + '/' + str(f)
             parser = Parser(filePath, d, f)
             parser.countWords()
@@ -106,7 +100,7 @@ def getUserInput(term):
     global uniqueTerms
     termList = []
     term = term.lower()
-    print("getUserInput" , term)
+
     try:
         ## parses the term and checks for unique terms
         termList = re.split('[^a-zA-Z0-9]', term)
@@ -119,7 +113,6 @@ def getUserInput(term):
                                   ## from the orginal set
         
         ## Removes terms that are not in the dictionary
-        print("temp: ", temp, "invertedIndex: ", invertedIndex)
         for t in temp:
             if t not in invertedIndex:
                 uniqueTerms.remove(t)
@@ -128,7 +121,6 @@ def getUserInput(term):
         for t in temp:
             if t in invalidIndex and len(uniqueTerms) > 1 and t in uniqueTerms:
                 uniqueTerms.remove(t)
-        print("uniqueTerms: ", uniqueTerms)           
                 
     except:
         return 'Your search did not match any documents'
@@ -154,21 +146,10 @@ def Calculate(term):
             tf_idf = tf * idf
             tfidfDictionary[k] += round(tf_idf, 5)
         
-    i = 1 ## keeps track of top 10 value
     ## Adds the top 10 url into a list
     for k, v in sorted(tfidfDictionary.items(), key = lambda x: -x[1] ):
-        if i < 10:
-            searchResults.append(BKdictionary[k])
-        i += 1
-
-    return searchResults
-            #Testing
-
-    # i = 0 ## shows url ranking
-    # ## loop to print url results
-    # for k in searchResults:
-    #     i += 1
-    #     if i <= 10: print '(', i, ')  ', k
+        searchResults.append(BKdictionary[k])
+        if len(searchResults) == 10: return searchResults
 
 
 def getStopWords():
