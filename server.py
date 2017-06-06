@@ -12,6 +12,7 @@ def search():
 def getResult():
 
 	#pq should be top 10 results
+	pq = []
 	search = request.form['query'].strip()
 	if search == "": return render_template("index.html")
 	Ranking.getStopWords()

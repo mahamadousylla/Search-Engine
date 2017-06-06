@@ -5,7 +5,6 @@ from math import log                ## used to calculate tf-idf
 from collections import defaultdict ## a dictionary to keep track of data
 
 
-searchResults = []                  ## List of the urls
 invalidIndex = []                   ## Used to improve searches
 uniqueTerms = set()                 ## set of unique terms to calculate tfidf
 numOfDocuments = 37497              ## counts the number of document
@@ -44,6 +43,7 @@ def getAllFiles():
 def getUserInput(term):
     global uniqueTerms
     termList = []
+    uniqueTerms = set()
     term = term.lower()
 
     try:
@@ -74,7 +74,6 @@ def Calculate(term):
     global BKdictionary
     global invertedIndex
     global tfidfDictionary
-    global searchResults
     global invalidIndex
 
     searchResults = []
@@ -94,7 +93,8 @@ def Calculate(term):
     ## Adds the top 10 url into a list
     for k, v in sorted(tfidfDictionary.items(), key = lambda x: -x[1] ):
         searchResults.append(BKdictionary[k])
-        if len(searchResults) == 10: return searchResults
+        if len(searchResults) == 10:
+            return searchResults
 
     return searchResults
 
